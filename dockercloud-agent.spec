@@ -5,6 +5,13 @@
 #   - github.com/hpcloud/tail (download)
 #   - github.com/flynn-archive/go-shlex (download)
 #   - github.com/getsentry/raven-go (download)
+# - downloads and installs third party closed binary (static 32bit ELF)
+# 2016/07/05 21:55:37 Downloading NAT tunnel binary ...
+# 2016/07/05 21:55:37 Downloading ngrok definition from https://cloud.docker.com/api/tutum/v1/agent/ngrok/latest/1.1.0.json
+# 2016/07/05 21:55:37 Downloading ngrok from https://files.cloud.docker.com/packages/ngrok/ngrok-1.7.tgz
+# 2016/07/05 21:55:46 Saving ngrok to /usr/lib/dockercloud/
+# 2016/07/05 21:55:46 Uncompressing: /usr/lib/dockercloud/._ngrok
+# 2016/07/05 21:55:46 Uncompressing: /usr/lib/dockercloud/ngrok
 Summary:	Agent to manage docker in nodes controlled by Docker Cloud
 Name:		dockercloud-agent
 Version:	1.1.0
