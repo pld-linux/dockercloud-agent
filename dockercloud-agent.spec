@@ -8,7 +8,7 @@
 Summary:	Agent to manage docker in nodes controlled by Docker Cloud
 Name:		dockercloud-agent
 Version:	1.1.0
-Release:	0.1
+Release:	0.2
 License:	Apache v2.0
 Group:		Applications/System
 Source0:	https://github.com/docker/dockercloud-agent/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -55,8 +55,8 @@ go get -d -v
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{_sbindir}
-install -p %{name} $RPM_BUILD_ROOT%{_sbindir}
+install -d $RPM_BUILD_ROOT%{_bindir}
+install -p %{name} $RPM_BUILD_ROOT%{_bindir}
 
 # Include init scripts
 install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{systemdunitdir}}
@@ -76,6 +76,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc README.md NOTICE
 %config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/dockercloud-agent
 %attr(754,root,root) /etc/rc.d/init.d/dockercloud-agent
-%attr(755,root,root) %{_sbindir}/dockercloud-agent
+%attr(755,root,root) %{_bindir}/dockercloud-agent
 %{systemdunitdir}/dockercloud-agent.socket
 %{systemdunitdir}/dockercloud-agent.service
