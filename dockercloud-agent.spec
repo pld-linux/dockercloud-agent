@@ -9,17 +9,19 @@
 # 2016/07/05 21:55:37 Downloading NAT tunnel binary ...
 # 2016/07/05 21:55:37 Downloading ngrok definition from https://cloud.docker.com/api/tutum/v1/agent/ngrok/latest/1.1.0.json
 # 2016/07/05 21:55:37 Downloading ngrok from https://files.cloud.docker.com/packages/ngrok/ngrok-1.7.tgz
-# 2016/07/05 21:55:46 Saving ngrok to /usr/lib/dockercloud/
-# 2016/07/05 21:55:46 Uncompressing: /usr/lib/dockercloud/._ngrok
-# 2016/07/05 21:55:46 Uncompressing: /usr/lib/dockercloud/ngrok
+# 2016/07/05 21:55:46 Saving ngrok to %{_libexecdir}/dockercloud/
+# 2016/07/05 21:55:46 Uncompressing: %{_libexecdir}/dockercloud/._ngrok
+# 2016/07/05 21:55:46 Uncompressing: %{_libexecdir}/dockercloud/ngrok
+# - runs with specific docker version (1.9.1-cs2), bundled, but we install docker package for 'docker' user
 Summary:	Agent to manage docker in nodes controlled by Docker Cloud
 Name:		dockercloud-agent
 Version:	1.1.0
-Release:	0.3
+Release:	0.4
 License:	Apache v2.0
 Group:		Applications/System
 Source0:	https://github.com/docker/dockercloud-agent/archive/v%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	9a3382c0a8f4b55bb8e94a250b6fd1dd
+Source1:	https://files.cloud.docker.com/packages/docker/docker-1.9.1-cs2.tgz
 URL:		https://github.com/docker/dockercloud-agent/
 BuildRequires:	golang < 1.6
 BuildRequires:	golang >= 1.4
@@ -32,6 +34,8 @@ Requires:	sqlite3
 Requires:	tar
 Requires:	xz
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_libexecdir	%{_prefix}/lib
 
 %define		_enable_debug_packages 0
 %define		gobuild(o:) go build -ldflags "${LDFLAGS:-} -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n')" -a -v -x %{?**};
@@ -78,6 +82,9 @@ cp -p contrib/logrotate/dockercloud-agent $RPM_BUILD_ROOT/etc/logrotate.d
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/dockercloud/agent
 cp -p dockercloud-agent.conf $RPM_BUILD_ROOT%{_sysconfdir}/dockercloud/agent
 
+install -d $RPM_BUILD_ROOT%{_libexecdir}/dockercloud
+cp -p %{SOURCE1} $RPM_BUILD_ROOT%{_libexecdir}/dockercloud/docker.tar.gz
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -92,3 +99,5 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/dockercloud-agent
 %{systemdunitdir}/dockercloud-agent.socket
 %{systemdunitdir}/dockercloud-agent.service
+%dir %{_libexecdir}/dockercloud
+%{_libexecdir}/dockercloud/docker.tar.gz
