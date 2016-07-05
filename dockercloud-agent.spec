@@ -14,8 +14,16 @@ Group:		Applications/System
 Source0:	https://github.com/docker/dockercloud-agent/archive/v%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	9a3382c0a8f4b55bb8e94a250b6fd1dd
 URL:		https://github.com/docker/dockercloud-agent/
-BuildRequires:	golang >= 1.4
 BuildRequires:	golang < 1.6
+BuildRequires:	golang >= 1.4
+Requires:	device-mapper-libs >= 1.02.90-1
+Requires:	docker
+Requires:	gnupg2
+Requires:	iptables
+Requires:	libcgroup
+Requires:	sqlite3
+Requires:	tar
+Requires:	xz
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_enable_debug_packages 0
@@ -50,10 +58,24 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_sbindir}
 install -p %{name} $RPM_BUILD_ROOT%{_sbindir}
 
+# Include init scripts
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{systemdunitdir}}
+cp -p contrib/init/sysvinit-redhat/dockercloud-agent $RPM_BUILD_ROOT/etc/rc.d/init.d
+cp -p contrib/init/systemd/dockercloud-agent.socket $RPM_BUILD_ROOT%{systemdunitdir}
+cp -p contrib/init/systemd/dockercloud-agent.service $RPM_BUILD_ROOT%{systemdunitdir}
+
+# Include logrotate
+install -d $RPM_BUILD_ROOT/etc/logrotate.d
+cp -p contrib/logrotate/dockercloud-agent $RPM_BUILD_ROOT/etc/logrotate.d
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
 %doc README.md NOTICE
+%config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/dockercloud-agent
+%attr(754,root,root) /etc/rc.d/init.d/dockercloud-agent
 %attr(755,root,root) %{_sbindir}/dockercloud-agent
+%{systemdunitdir}/dockercloud-agent.socket
+%{systemdunitdir}/dockercloud-agent.service
